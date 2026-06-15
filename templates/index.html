@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IsItFake — Deepfake Detector</title>
+  <link rel="stylesheet" href="/static/css/style.css"/>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <span>🛡️</span>
+      <span>IsItFake</span>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-tab="home">
+        <span class="nav-icon">🏠</span>
+        <span>Beranda</span>
+      </button>
+      <button class="nav-item" data-tab="predict">
+        <span class="nav-icon">🔍</span>
+        <span>Prediksi</span>
+      </button>
+      <button class="nav-item" data-tab="dashboard">
+        <span class="nav-icon">📊</span>
+        <span>Dashboard</span>
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <p>IsItFake &copy; 2026</p>
+      <p>Untuk keperluan riset</p>
+    </div>
+  </aside>
+
+  <!-- TOPBAR MOBILE -->
+  <header class="topbar">
+    <button class="hamburger" id="hamburger">☰</button>
+    <span class="topbar-title">IsItFake</span>
+  </header>
+
+  <!-- OVERLAY -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <!-- HOME -->
+    <section class="tab-content active" id="tab-home">
+      <div class="page-header">
+        <h1>Beranda</h1>
+        <p>Sistem deteksi deepfake berbasis deep learning</p>
+      </div>
+
+      <div class="info-block">
+        <div class="info-row-item">
+          <span class="info-label">Nama Proyek</span>
+          <span class="info-value">IsItFake — Deepfake Detection System</span>
+        </div>
+        <div class="info-row-item">
+          <span class="info-label">Nama Mahasiswa</span>
+          <span class="info-value">Siti Fadhilah Rahmi</span>
+        </div>
+        <div class="info-row-item">
+          <span class="info-label">NIM</span>
+          <span class="info-value">2311532003</span>
+        </div>
+        <div class="info-row-item">
+          <span class="info-label">Deskripsi</span>
+          <span class="info-value">Sistem deteksi deepfake berbasis deep learning menggunakan arsitektur EfficientNetB0, dilatih untuk membedakan wajah manusia asli dengan wajah hasil generate atau dimanipulasi menggunakan AI secara otomatis.</span>
+        </div>
+      </div>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="fc-icon">🧠</div>
+          <div class="fc-title">Deep Learning</div>
+          <div class="fc-desc">Dibangun di atas EfficientNetB0 dengan transfer learning dari ImageNet.</div>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon">🎯</div>
+          <div class="fc-title">Akurasi Tinggi</div>
+          <div class="fc-desc">Mencapai akurasi 98% pada validation set dengan 4.000 sampel uji.</div>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon">⚡</div>
+          <div class="fc-title">Inferensi Cepat</div>
+          <div class="fc-desc">Hasil deteksi tersedia dalam hitungan detik langsung di browser.</div>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon">⚠️</div>
+          <div class="fc-title">Gunakan dengan Bijak</div>
+          <div class="fc-desc">Model ini adalah alat bantu, bukan keputusan akhir.</div>
+        </div>
+      </div>
+
+      <div class="disclaimer">
+        <span>ℹ️</span>
+        <span>Alat ini akurat namun tidak sempurna. Gunakan hasilnya sebagai indikator kuat, bukan keputusan akhir. Selalu pertimbangkan konteks di luar hasil deteksi.</span>
+      </div>
+
+      <button class="btn-primary" onclick="switchTab('predict')">Mulai Deteksi →</button>
+    </section>
+
+    <!-- PREDICT -->
+    <section class="tab-content" id="tab-predict">
+      <div class="page-header">
+        <h1>Prediksi</h1>
+        <p>Upload foto wajah untuk dianalisis</p>
+      </div>
+
+      <div class="card" id="uploadCard">
+        <div class="section-label">Upload Gambar</div>
+        <div class="drop-zone" id="dropZone">
+          <div class="drop-icon">📷</div>
+          <p class="drop-text">Drag & drop foto wajah di sini</p>
+          <p class="drop-sub">atau</p>
+          <label class="btn-primary" id="uploadLabel">Pilih File</label>
+          <input type="file" id="fileInput" accept="image/*" hidden/>
+          <p class="drop-hint">JPG · PNG · WEBP · Maks 16MB</p>
+        </div>
+      </div>
+
+      <div class="card hidden" id="previewCard">
+        <div class="section-label">Konfirmasi Gambar</div>
+        <div class="two-col">
+          <img id="previewImg" src="" alt="Preview"/>
+          <div class="col-right">
+            <p class="filename" id="previewFilename"></p>
+            <button class="btn-primary full" id="analyzeBtn">🔍 Analisis Sekarang</button>
+            <button class="btn-secondary full" id="resetBtn">↩ Pilih Lain</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card hidden" id="resultCard">
+        <div class="loader hidden" id="loader">
+          <div class="spinner"></div>
+          <p>Menganalisis gambar...</p>
+        </div>
+        <div id="resultContent" class="hidden">
+          <div class="section-label">Hasil Deteksi</div>
+          <div class="two-col">
+            <img id="resultImg" src="" alt="Hasil"/>
+            <div class="col-right">
+              <div class="verdict-badge" id="verdictBadge"></div>
+              <div class="metric-row">
+                <span class="metric-label">Confidence Score</span>
+                <span class="metric-val" id="confidenceValue"></span>
+              </div>
+              <div class="bar-bg"><div class="bar-fill" id="confidenceBar"></div></div>
+              <div class="metric-row" style="margin-top:12px">
+                <span class="metric-label">Waktu Inferensi</span>
+                <span class="metric-val" id="inferenceTime"></span>
+              </div>
+              <div class="result-note" id="resultNote"></div>
+              <button class="btn-secondary full" id="resetBtn2">↩ Analisis Lagi</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DASHBOARD -->
+    <section class="tab-content" id="tab-dashboard">
+      <div class="page-header">
+        <h1>Dashboard Statistik</h1>
+        <p>Data berdasarkan hasil training dan evaluasi model</p>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-icon">🗂️</div>
+          <div class="stat-val">20.000</div>
+          <div class="stat-label">Total Dataset</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🏋️</div>
+          <div class="stat-val">16.000</div>
+          <div class="stat-label">Data Training</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🧪</div>
+          <div class="stat-val">4.000</div>
+          <div class="stat-label">Data Validasi</div>
+        </div>
+        <div class="stat-card accent">
+          <div class="stat-icon">🎯</div>
+          <div class="stat-val">98%</div>
+          <div class="stat-label">Akurasi Model</div>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="card">
+          <div class="section-label">Distribusi Dataset</div>
+          <div class="dist-item">
+            <div class="dist-header">
+              <span>Real (Asli)</span>
+              <span>10.000 gambar</span>
+            </div>
+            <div class="bar-bg"><div class="bar-fill real" style="width:50%"></div></div>
+            <div class="dist-sub">FFHQ: 5.000 &nbsp;·&nbsp; CelebA: 5.000</div>
+          </div>
+          <div class="dist-item">
+            <div class="dist-header">
+              <span>Fake (AI-Generated)</span>
+              <span>10.000 gambar</span>
+            </div>
+            <div class="bar-bg"><div class="bar-fill fake" style="width:50%"></div></div>
+            <div class="dist-sub">StyleGAN: 5.000 &nbsp;·&nbsp; Diffusion: 4.000 &nbsp;·&nbsp; GenAI: ~1.000</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-label">Metrik Evaluasi</div>
+          <table class="metrics-table">
+            <thead>
+              <tr><th>Kelas</th><th>Precision</th><th>Recall</th><th>F1-Score</th><th>Support</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Real</td><td>0.97</td><td>1.00</td><td>0.98</td><td>1.966</td></tr>
+              <tr><td>Fake</td><td>1.00</td><td>0.97</td><td>0.98</td><td>2.034</td></tr>
+              <tr class="avg-row"><td>Rata-rata</td><td>0.98</td><td>0.98</td><td>0.98</td><td>4.000</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="section-label">Confusion Matrix</div>
+          <div class="cm-wrap">
+            <div class="cm-grid">
+              <div class="cm-cell header"></div>
+              <div class="cm-cell header">Pred: Real</div>
+              <div class="cm-cell header">Pred: Fake</div>
+              <div class="cm-cell header">True: Real</div>
+              <div class="cm-cell tp">1.961<span>True Positive</span></div>
+              <div class="cm-cell fp">5<span>False Positive</span></div>
+              <div class="cm-cell header">True: Fake</div>
+              <div class="cm-cell fn">67<span>False Negative</span></div>
+              <div class="cm-cell tn">1.967<span>True Negative</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-label">Informasi Model</div>
+          <div class="info-list">
+            <div class="info-row"><span>Arsitektur</span><strong>EfficientNetB0</strong></div>
+            <div class="info-row"><span>Input Size</span><strong>224 × 224 px</strong></div>
+            <div class="info-row"><span>Pretrained</span><strong>ImageNet</strong></div>
+            <div class="info-row"><span>Epochs</span><strong>10</strong></div>
+            <div class="info-row"><span>Optimizer</span><strong>Adam</strong></div>
+            <div class="info-row"><span>Loss Function</span><strong>Binary Crossentropy</strong></div>
+            <div class="info-row"><span>Precision (Mixed)</span><strong>float16</strong></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="/static/js/main.js"></script>
+</body>
+</html>
